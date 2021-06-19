@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>signUp</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      div {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        text-align: center;
+      }
+      a {
+        color: #222;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <p><input type="email" name="email" id="email" /></p>
+      <p><input type="password" name="password" id="password" /></p>
+      <p>
+        <button onclick="signup()">회원가입</button>
+        <button><a href="/">돌아가기</a></button>
+      </p>
+    </div>
+    <script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
+    <script src="js.js"></script>
+    <script>
+      const request = async (email, password) => {
+        console.log(email, password);
+        await axios.post("/user/signup", {
+          email,
+          password,
+        });
+      };
+      const signup = () => {
+        const email = document.querySelector("#email").value;
+        const password = document.querySelector("#password").value;
+        console.log(email, password);
+        if (validateEmail(email)) return request(email, password);
+      };
+    </script>
+  </body>
+</html>
