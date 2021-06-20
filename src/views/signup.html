@@ -34,20 +34,5 @@
     </div>
     <script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
     <script src="js.js"></script>
-    <script>
-      const request = async (email, password) => {
-        console.log(email, password);
-        await axios.post("/user/signup", {
-          email,
-          password,
-        });
-      };
-      const signup = () => {
-        const email = document.querySelector("#email").value;
-        const password = document.querySelector("#password").value;
-        console.log(email, password);
-        if (validateEmail(email)) return request(email, password);
-      };
-    </script>
   </body>
 </html>

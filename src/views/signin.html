@@ -28,25 +28,11 @@
       <p><input type="email" name="email" id="email" /></p>
       <p><input type="password" name="password" id="password" /></p>
       <p>
-        <button onclick="login()">로그인</button>
+        <button onclick="signin()">로그인</button>
         <button><a href="/">돌아가기</a></button>
       </p>
     </div>
     <script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
     <script src="js.js"></script>
-    <script>
-      const login = () => {
-        const email = document.querySelector("#email").value;
-        const password = document.querySelector("#password").value;
-
-        if (validateEmail(email)) return request();
-      };
-      const request = async () => {
-        await axios.post("/user/signin", {
-          email,
-          password,
-        });
-      };
-    </script>
   </body>
 </html>

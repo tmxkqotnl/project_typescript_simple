@@ -1,45 +1,75 @@
 import { Request, Response, NextFunction } from "express";
-import { getMongoManager } from "typeorm";
+import { getMongoManager, MongoEntityManager } from "typeorm";
 import { User } from "../entity/user";
 import bcrypt from "bcrypt";
 
-const validateAccount = (req:Request,res:Response, next:NextFunction)=> {
-  const mailFormat =
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-  const email = req.body.email;
-  const password =req.body.password;
-  if (!email.match(mailFormat)) return res.status(400).json({});
-  if()
-};
-const validateString = (input: string): boolean => {
-  if (typeof input !== "string" || (input as string).length === 0) {
-    return false;
-  }
-  return true;
-};
+// atlas json setting & atlas index setting are required
 
 const Signup = async (req: Request, res: Response, next: NextFunction) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  try {
+    const user: User = new User();
+    const dbManager: MongoEntityManager = getMongoManager("local");
+    const genSalt: string = await bcrypt.genSalt(10);
+    const hash: string = await bcrypt.hash(req.body.password, genSalt);
 
-  const user: User = new User();
-  const dbManager = getMongoManager("atlas");
-  await dbManager.save(user);
+    user.email = req.body.email;
+    user.password = hash;
 
-  res.status(201).send();
+    const newUser: User | undefined = await dbManager.save(user);
+
+    res.status(201).json({
+      user: newUser,
+      success: true,
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        message: "duplicate email",
+        success: false,
+      });
+    }
+    console.error("DB SAVE ERROR");
+    console.error(error);
+    res.status(500).json({
+      message: "unexpected error",
+      success: false,
+    });
+  }
 };
-const Login = async (req: Request, res: Response, next: NextFunction) => {
-  const user: User = new User();
-  const dbManager = getMongoManager("atlas");
+const Singin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user: User = new User();
+    const dbManager: MongoEntityManager = getMongoManager("local");
 
-  const email = req.body.email;
-  const password = req.body.passsword;
+    const email: string = req.body.email;
+    const password: string = req.body.password;
 
-  const rdata = await dbManager.findOne(User, { email });
-  console.log(rdata);
+    const rdata: User | undefined = await dbManager.findOne(User, { email });
+    if (!rdata)
+      return res.status(400).json({
+        message: "check your email or password",
+        success: false,
+      });
 
-  res.status(201).send();
+    const result: boolean = await bcrypt.compare(password, rdata.password);
+
+    if (!result) {
+      return res.status(400).json({
+        message: "check your email or password",
+        success: false,
+      });
+    }
+    res.status(201).json({
+      success: true,
+      isLoggedIn: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "unexpected error",
+      success: false,
+    });
+  }
 };
 
-export default { Login, Signup };
+export default { Singin, Signup };

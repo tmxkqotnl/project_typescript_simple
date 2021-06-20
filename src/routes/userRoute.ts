@@ -8,7 +8,7 @@ router.get("/signin", (req: Request, res: Response) => {
 router.get("/signup", (req: Request, res: Response) => {
   res.render("signup");
 });
-router.post("/signin", userController.Login);
+router.post("/signin", userController.Singin);
 router.post("/signup", userController.Signup);
 
 export default router;

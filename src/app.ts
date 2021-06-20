@@ -5,7 +5,7 @@ const start = async () => {
   try {
     const app: App = new App();
     const DBConnection: Connection = await createConnection({
-      name: "atlas",
+      name: "local",
       type: "mongodb",
       url: process.env.MONGO_URI,
       useNewUrlParser: true,

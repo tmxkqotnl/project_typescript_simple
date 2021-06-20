@@ -32,7 +32,6 @@ class App {
     this.server.use(express.json());
     this.server.use(express.static(path.join(__dirname, "public")));
     this.server.use("/user", express.static(path.join(__dirname, "public")));
-    this.server.use(express.urlencoded({ extended: false }));
     this.server.use("/", indexRouter);
     this.server.use("/user", userRouter);
     this.server.use("/board", boardRouter);
@@ -47,9 +46,9 @@ class App {
     });
 
     this.server.use((req: Request, res: Response, next: NextFunction) => {
-      const error: Error = new Error(`${req.method} ${req.url}`);
-      console.log("404");
-      next(error);
+      res.status(404).render("error", {
+        message: "PAGE NOT FOUND",
+      });
     });
 
     this.server.use(
@@ -59,7 +58,7 @@ class App {
         res: Response,
         next: NextFunction
       ) => {
-        console.log(err);
+        console.error(err);
         res.send(err);
       }
     );
